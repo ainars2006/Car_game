@@ -3,7 +3,19 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Medic
+  - Garbage
+  - School
+  - Cement
+  - b2
+  - e46
+  - e61
+  - Exkavator
+  - polic
+  - Traktor
+  - Traktor5
+  - Ugunsdzeseji
   layers:
   - Default
   - TransparentFX
