@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,6 +16,16 @@ public class ObjectScript : MonoBehaviour
     public GameObject traktor5;
     public GameObject ugunsdzesēji;
 
+    public AudioSource audioSource;
+    public AudioClip[] audioClips;
+    public GameObject completePanel;
+
+    [HideInInspector] public bool rightPlace = false;
+    public GameObject lastDragged = null;
+
+    public int correctlyPlacedCount = 0;
+    public HashSet<string> placedTags = new HashSet<string>();
+
     [HideInInspector] public Vector2 medicPos;
     [HideInInspector] public Vector2 gTruckPos;
     [HideInInspector] public Vector2 sBusPos;
@@ -29,11 +38,6 @@ public class ObjectScript : MonoBehaviour
     [HideInInspector] public Vector2 traktorPos;
     [HideInInspector] public Vector2 traktor5Pos;
     [HideInInspector] public Vector2 ugunsdzesējiPos;
-
-    public AudioSource audioSource;
-    public AudioClip[] audioClips;
-    [HideInInspector] public bool rightPlace = false;
-    public GameObject lastDragged = null;
 
     void Start()
     {
@@ -49,5 +53,16 @@ public class ObjectScript : MonoBehaviour
         traktorPos = traktor.GetComponent<RectTransform>().localPosition;
         traktor5Pos = traktor5.GetComponent<RectTransform>().localPosition;
         ugunsdzesējiPos = ugunsdzesēji.GetComponent<RectTransform>().localPosition;
+
+        if (completePanel != null)
+            completePanel.SetActive(false);
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            completePanel.SetActive(true);
+        }
     }
 }

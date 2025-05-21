@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class PlaceScript : MonoBehaviour, IDropHandler
@@ -12,92 +10,95 @@ public class PlaceScript : MonoBehaviour, IDropHandler
 
     public void OnDrop(PointerEventData eventData)
     {
-        if ((eventData.pointerDrag != null) && Input.GetMouseButtonUp(0)
-            && Input.GetMouseButton(2) == false) { }
-
-        if (eventData.pointerDrag.tag.Equals(tag))
+        if (eventData.pointerDrag != null && Input.GetMouseButtonUp(0) && !Input.GetMouseButton(2))
         {
+            if (eventData.pointerDrag.tag.Equals(tag))
+            {
+                placeZRotation = eventData.pointerDrag.GetComponent<RectTransform>().eulerAngles.z;
+                carZRotation = GetComponent<RectTransform>().eulerAngles.z;
+                difZRotation = Mathf.Abs(placeZRotation - carZRotation);
 
-            placeZRotation = 
-            eventData.pointerDrag.GetComponent<RectTransform>().transform.eulerAngles.z;
+                placeSize = eventData.pointerDrag.GetComponent<RectTransform>().localScale;
+                carSize = GetComponent<RectTransform>().localScale;
+                xSizeDif = Mathf.Abs(placeSize.x - carSize.x);
+                ySizeDif = Mathf.Abs(placeSize.y - carSize.y);
 
-            carZRotation = GetComponent<RectTransform>().transform.eulerAngles.z;
-
-            difZRotation = Mathf.Abs(placeZRotation - carZRotation);
-            Debug.Log("Dif Z Rotation: " + difZRotation);
-
-            placeSize = eventData.pointerDrag.GetComponent<RectTransform>().localScale;
-            carSize = GetComponent<RectTransform>().localScale;
-            xSizeDif = Mathf.Abs(placeSize.x - carSize.x);
-            ySizeDif = Mathf.Abs(placeSize.y - carSize.y);
-            Debug.Log("Dif X Size: " + xSizeDif + "Dif Y Size " + ySizeDif);
-
-            if ((difZRotation <= 10 || (difZRotation >= 350 && difZRotation <= 360)) &&
-                (xSizeDif <= 0.3 && ySizeDif <= 0.3)){
-                Debug.Log("Right Place");
-                objectScript.rightPlace = true;
-
-                // Iecentrē pozīciju
-                eventData.pointerDrag.GetComponent<RectTransform>().anchoredPosition =
-                    GetComponent<RectTransform>().anchoredPosition;
-
-                // Pielāgo rotāciju
-                eventData.pointerDrag.GetComponent<RectTransform>().localRotation =
-                    GetComponent<RectTransform>().localRotation;
-
-                // Pielāgo izmēru
-                eventData.pointerDrag.GetComponent<RectTransform>().localScale =
-                     GetComponent<RectTransform>().localScale;
-
-                switch (eventData.pointerDrag.tag)
+                if ((difZRotation <= 10 || (difZRotation >= 350 && difZRotation <= 360)) &&
+                    (xSizeDif <= 0.3f && ySizeDif <= 0.3f))
                 {
-                    case "Garbage":
-                        objectScript.audioSource.PlayOneShot(objectScript.audioClips[2]);
-                        break;
+                    objectScript.rightPlace = true;
 
-                    case "Medic":
-                        objectScript.audioSource.PlayOneShot(objectScript.audioClips[4]);
-                        break;
+                    RectTransform dragTransform = eventData.pointerDrag.GetComponent<RectTransform>();
+                    RectTransform thisTransform = GetComponent<RectTransform>();
 
-                    case "School":
-                        objectScript.audioSource.PlayOneShot(objectScript.audioClips[3]);
-                        break;
+                    dragTransform.anchoredPosition = thisTransform.anchoredPosition;
+                    dragTransform.localRotation = thisTransform.localRotation;
+                    dragTransform.localScale = thisTransform.localScale;
 
-                    default:
-                        Debug.LogError("Unknown tag!");
-                        break;
+                    string placedTag = eventData.pointerDrag.tag;
+
+                    if (!objectScript.placedTags.Contains(placedTag))
+                    {
+                        objectScript.correctlyPlacedCount++;
+                        objectScript.placedTags.Add(placedTag);
+                        Debug.Log("Correctly placed: " + objectScript.correctlyPlacedCount);
+                        Debug.Log("Placed tag: " + placedTag);
+                    }
+
+                    PlaySuccessSound(placedTag);
+
+                    if (objectScript.correctlyPlacedCount >= 12)
+                    {
+                        objectScript.completePanel.SetActive(true);
+                    }
                 }
             }
-
-        }
-        else
-        {
-            objectScript.rightPlace = false;
-            objectScript.audioSource.PlayOneShot(objectScript.audioClips[1]);
-
-            switch (eventData.pointerDrag.tag)
+            else
             {
-                case "Garbage":
-                    objectScript.garbageTruck.GetComponent<RectTransform>().localPosition
-                        = objectScript.gTruckPos;
-                    break;
+                objectScript.rightPlace = false;
+                objectScript.audioSource.PlayOneShot(objectScript.audioClips[1]);
 
-                case "Medic":
-                    objectScript.medic.GetComponent<RectTransform>().localPosition
-                        = objectScript.medicPos;
-                    break;
-
-                case "School":
-                    objectScript.schoolBus.GetComponent<RectTransform>().localPosition
-                        = objectScript.sBusPos;
-                    break;
-
-                default:
-                    Debug.LogError("Unknown tag!");
-                    break;
+                ResetToOriginalPosition(eventData.pointerDrag);
             }
-
         }
-      }
     }
 
+    private void ResetToOriginalPosition(GameObject obj)
+    {
+        string tag = obj.tag;
+        switch (tag)
+        {
+            case "Garbage": obj.GetComponent<RectTransform>().localPosition = objectScript.gTruckPos; break;
+            case "Medic": obj.GetComponent<RectTransform>().localPosition = objectScript.medicPos; break;
+            case "School": obj.GetComponent<RectTransform>().localPosition = objectScript.sBusPos; break;
+            case "Cement": obj.GetComponent<RectTransform>().localPosition = objectScript.cementTruckPos; break;
+            case "b2": obj.GetComponent<RectTransform>().localPosition = objectScript.b2Pos; break;
+            case "e46": obj.GetComponent<RectTransform>().localPosition = objectScript.e46Pos; break;
+            case "e61": obj.GetComponent<RectTransform>().localPosition = objectScript.e61Pos; break;
+            case "Exkavator": obj.GetComponent<RectTransform>().localPosition = objectScript.exkavatorPos; break;
+            case "polic": obj.GetComponent<RectTransform>().localPosition = objectScript.policeCarPos; break;
+            case "Traktor": obj.GetComponent<RectTransform>().localPosition = objectScript.traktorPos; break;
+            case "Traktor5": obj.GetComponent<RectTransform>().localPosition = objectScript.traktor5Pos; break;
+            case "Ugunsdzeseji": obj.GetComponent<RectTransform>().localPosition = objectScript.ugunsdzesējiPos; break;
+        }
+    }
+
+    private void PlaySuccessSound(string tag)
+    {
+        switch (tag)
+        {
+            case "Garbage": objectScript.audioSource.PlayOneShot(objectScript.audioClips[2]); break;
+            case "Medic": objectScript.audioSource.PlayOneShot(objectScript.audioClips[4]); break;
+            case "School": objectScript.audioSource.PlayOneShot(objectScript.audioClips[3]); break;
+            case "Cement": objectScript.audioSource.PlayOneShot(objectScript.audioClips[5]); break;
+            case "b2": objectScript.audioSource.PlayOneShot(objectScript.audioClips[6]); break;
+            case "e46": objectScript.audioSource.PlayOneShot(objectScript.audioClips[7]); break;
+            case "e61": objectScript.audioSource.PlayOneShot(objectScript.audioClips[8]); break;
+            case "Exkavator": objectScript.audioSource.PlayOneShot(objectScript.audioClips[9]); break;
+            case "polic": objectScript.audioSource.PlayOneShot(objectScript.audioClips[10]); break;
+            case "Traktor": objectScript.audioSource.PlayOneShot(objectScript.audioClips[11]); break;
+            case "Traktor5": objectScript.audioSource.PlayOneShot(objectScript.audioClips[12]); break;
+            case "Ugunsdzeseji": objectScript.audioSource.PlayOneShot(objectScript.audioClips[13]); break;
+        }
+    }
+}

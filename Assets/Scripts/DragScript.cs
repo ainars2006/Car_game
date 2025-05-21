@@ -22,7 +22,6 @@ public class DragScript : MonoBehaviour, IDragHandler, IBeginDragHandler,
         if (Input.GetMouseButtonDown(0) && Input.GetMouseButton(2) == false)
         {
 
-            Debug.Log("Pointer Down: " + gameObject.name);
             objectScript.audioSource.PlayOneShot(objectScript.audioClips[0]);
 
         }
@@ -33,7 +32,6 @@ public class DragScript : MonoBehaviour, IDragHandler, IBeginDragHandler,
         if (Input.GetMouseButton(0) && Input.GetMouseButton(2) == false)
         {
             objectScript.lastDragged = null;
-            Debug.Log("Begin Drag: " + gameObject.name);
             canvasGroup.alpha = 0.6f;
             canvasGroup.blocksRaycasts = false;
             rectTransform.SetSiblingIndex(50);
@@ -43,7 +41,6 @@ public class DragScript : MonoBehaviour, IDragHandler, IBeginDragHandler,
 
     public void OnDrag(PointerEventData eventData)
     {
-        Debug.Log("Dragging: " + gameObject.name);
         Vector2 mousePosition =
             new Vector2(Input.mousePosition.x, Input.mousePosition.y);
         mousePosition.x = Mathf.Clamp(
@@ -60,7 +57,6 @@ public class DragScript : MonoBehaviour, IDragHandler, IBeginDragHandler,
         if(Input.GetMouseButtonUp(0)) 
             {
 
-                Debug.Log("Dragging ended: " + gameObject.name);
                 objectScript.lastDragged = eventData.pointerDrag;
                 canvasGroup.alpha = 1f;
 
@@ -73,7 +69,6 @@ public class DragScript : MonoBehaviour, IDragHandler, IBeginDragHandler,
             else
             {
                 objectScript.lastDragged = null;
-                // Varētu tālāk pārbaudīt vai visas mašīnas ir savā vietā
             }
             objectScript.rightPlace = false;
         }
