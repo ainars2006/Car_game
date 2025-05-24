@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class PlaceScript : MonoBehaviour, IDropHandler
 {
     private float placeZRotation, carZRotation, difZRotation;
     private Vector2 placeSize, carSize;
     private float xSizeDif, ySizeDif;
+
     public ObjectScript objectScript;
 
     public void OnDrop(PointerEventData eventData)
@@ -41,8 +43,6 @@ public class PlaceScript : MonoBehaviour, IDropHandler
                     {
                         objectScript.correctlyPlacedCount++;
                         objectScript.placedTags.Add(placedTag);
-                        Debug.Log("Correctly placed: " + objectScript.correctlyPlacedCount);
-                        Debug.Log("Placed tag: " + placedTag);
                     }
 
                     PlaySuccessSound(placedTag);
@@ -50,6 +50,27 @@ public class PlaceScript : MonoBehaviour, IDropHandler
                     if (objectScript.correctlyPlacedCount >= 12)
                     {
                         objectScript.completePanel.SetActive(true);
+
+                        string[] timeParts = objectScript.timerText.text.Split(':');
+                        int minutes = int.Parse(timeParts[0]);
+                        int seconds = int.Parse(timeParts[1]);
+                        float totalTime = minutes * 60 + seconds;
+
+                        if (totalTime <= 60)
+                        {
+                            objectScript.star1.SetActive(true);
+                            objectScript.star2.SetActive(true);
+                            objectScript.star3.SetActive(true);
+                        }
+                        else if (totalTime <= 120)
+                        {
+                            objectScript.star1.SetActive(true);
+                            objectScript.star2.SetActive(true);
+                        }
+                        else if (totalTime <= 180)
+                        {
+                            objectScript.star1.SetActive(true);
+                        }
                     }
                 }
             }
@@ -57,7 +78,6 @@ public class PlaceScript : MonoBehaviour, IDropHandler
             {
                 objectScript.rightPlace = false;
                 objectScript.audioSource.PlayOneShot(objectScript.audioClips[1]);
-
                 ResetToOriginalPosition(eventData.pointerDrag);
             }
         }

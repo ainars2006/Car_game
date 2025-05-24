@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ObjectScript : MonoBehaviour
 {
@@ -19,6 +20,10 @@ public class ObjectScript : MonoBehaviour
     public AudioSource audioSource;
     public AudioClip[] audioClips;
     public GameObject completePanel;
+    public GameObject star1;
+    public GameObject star2;
+    public GameObject star3;
+    public Text timerText;
 
     [HideInInspector] public bool rightPlace = false;
     public GameObject lastDragged = null;

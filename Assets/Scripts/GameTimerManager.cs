@@ -9,16 +9,26 @@ public class GameTimerManager : MonoBehaviour
     private float timer;
     private bool gameEnded = false;
 
-    public Text timerText;
+    public ObjectScript objectScript;
     public GameObject failPanel;
 
     void Update()
     {
         if (gameEnded) return;
+
         timer += Time.deltaTime;
+
         int minutes = Mathf.FloorToInt(timer / 60f);
         int seconds = Mathf.FloorToInt(timer % 60f);
-        timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+
+        if (objectScript != null && objectScript.timerText != null)
+        {
+            objectScript.timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        }
+        else
+        {
+            Debug.LogWarning("GameTimerManager: objectScript or timerText is not assigned!");
+        }
 
         if (timer >= timeLimit)
         {
@@ -29,6 +39,9 @@ public class GameTimerManager : MonoBehaviour
     void EndGame()
     {
         gameEnded = true;
-        failPanel.SetActive(true);
+        if (failPanel != null)
+        {
+            failPanel.SetActive(true);
+        }
     }
 }
