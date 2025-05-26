@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+// Galvenais objekta skripts kas pārvalda spēles stāvokli un atsauces
 public class ObjectScript : MonoBehaviour
 {
+    // Transportlīdzekļu objekti
     public GameObject medic;
     public GameObject garbageTruck;
     public GameObject schoolBus;
@@ -17,20 +19,19 @@ public class ObjectScript : MonoBehaviour
     public GameObject traktor5;
     public GameObject ugunsdzesēji;
 
-    public AudioSource audioSource;
-    public AudioClip[] audioClips;
-    public GameObject completePanel;
-    public GameObject star1;
-    public GameObject star2;
-    public GameObject star3;
-    public Text timerText;
+    public AudioSource audioSource; // Skaņas atskaņotājs
+    public AudioClip[] audioClips; // Skaņu klipi
+    public GameObject completePanel; // Pabeigšanas panelis
+    public GameObject star1, star2, star3; // Zvaigznes
+    public Text timerText; // Taimeris uz ekrāna
 
-    [HideInInspector] public bool rightPlace = false;
-    public GameObject lastDragged = null;
+    [HideInInspector] public bool rightPlace = false; // Vai objekts novietots pareizajā vietā
+    public GameObject lastDragged = null; // Pēdējais vilktais objekts
 
-    public int correctlyPlacedCount = 0;
-    public HashSet<string> placedTags = new HashSet<string>();
+    public int correctlyPlacedCount = 0; // Skaits cik objekti novietoti pareizi
+    public HashSet<string> placedTags = new HashSet<string>(); // Unikālie tagi novietotajiem objektiem
 
+    // Oriģinālās pozīcijas katram objektam
     [HideInInspector] public Vector2 medicPos;
     [HideInInspector] public Vector2 gTruckPos;
     [HideInInspector] public Vector2 sBusPos;
@@ -46,6 +47,7 @@ public class ObjectScript : MonoBehaviour
 
     void Start()
     {
+        // Saglabā sākotnējās pozīcijas lai vajadzības gadījumā varētu atgriezt
         medicPos = medic.GetComponent<RectTransform>().localPosition;
         gTruckPos = garbageTruck.GetComponent<RectTransform>().localPosition;
         sBusPos = schoolBus.GetComponent<RectTransform>().localPosition;
@@ -60,14 +62,6 @@ public class ObjectScript : MonoBehaviour
         ugunsdzesējiPos = ugunsdzesēji.GetComponent<RectTransform>().localPosition;
 
         if (completePanel != null)
-            completePanel.SetActive(false);
-    }
-
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            completePanel.SetActive(true);
-        }
+            completePanel.SetActive(false); // Sākumā paslēpj pabeigšanas paneli
     }
 }

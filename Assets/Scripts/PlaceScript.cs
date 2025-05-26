@@ -2,6 +2,7 @@
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+// Skripts kas pārbauda vai vilktais objekts ir novietots pareizi
 public class PlaceScript : MonoBehaviour, IDropHandler
 {
     private float placeZRotation, carZRotation, difZRotation;
@@ -14,8 +15,10 @@ public class PlaceScript : MonoBehaviour, IDropHandler
     {
         if (eventData.pointerDrag != null && Input.GetMouseButtonUp(0) && !Input.GetMouseButton(2))
         {
+            // Pārbauda vai objekta tags sakrīt ar mērķa tags
             if (eventData.pointerDrag.tag.Equals(tag))
             {
+                // Salīdzina rotāciju un izmēru
                 placeZRotation = eventData.pointerDrag.GetComponent<RectTransform>().eulerAngles.z;
                 carZRotation = GetComponent<RectTransform>().eulerAngles.z;
                 difZRotation = Mathf.Abs(placeZRotation - carZRotation);
@@ -25,11 +28,13 @@ public class PlaceScript : MonoBehaviour, IDropHandler
                 xSizeDif = Mathf.Abs(placeSize.x - carSize.x);
                 ySizeDif = Mathf.Abs(placeSize.y - carSize.y);
 
+                // Ja rotācija un izmērs ir līdzīgi uzskata par pareizu novietošanu
                 if ((difZRotation <= 10 || (difZRotation >= 350 && difZRotation <= 360)) &&
                     (xSizeDif <= 0.3f && ySizeDif <= 0.3f))
                 {
                     objectScript.rightPlace = true;
 
+                    // Novieto objektu precīzi vietā
                     RectTransform dragTransform = eventData.pointerDrag.GetComponent<RectTransform>();
                     RectTransform thisTransform = GetComponent<RectTransform>();
 
@@ -39,14 +44,17 @@ public class PlaceScript : MonoBehaviour, IDropHandler
 
                     string placedTag = eventData.pointerDrag.tag;
 
+                    // Ja šis tags vēl nebija novietots pievieno un palielina skaitītāju
                     if (!objectScript.placedTags.Contains(placedTag))
                     {
                         objectScript.correctlyPlacedCount++;
                         objectScript.placedTags.Add(placedTag);
                     }
 
+                    // Atskaņo atbilstošo skaņu
                     PlaySuccessSound(placedTag);
 
+                    // Ja visi 12 objekti ir vietā parāda Pabeigšanas paneli un zvaigznes atkarībā no laika laika
                     if (objectScript.correctlyPlacedCount >= 12)
                     {
                         objectScript.completePanel.SetActive(true);
@@ -76,6 +84,7 @@ public class PlaceScript : MonoBehaviour, IDropHandler
             }
             else
             {
+                // Ja objekts nepareizs — atgriež sākotnējā vietā un atskaņo kļūdas skaņu
                 objectScript.rightPlace = false;
                 objectScript.audioSource.PlayOneShot(objectScript.audioClips[1]);
                 ResetToOriginalPosition(eventData.pointerDrag);
@@ -83,6 +92,7 @@ public class PlaceScript : MonoBehaviour, IDropHandler
         }
     }
 
+    // Atgriež objektu sākotnējā pozīcijā
     private void ResetToOriginalPosition(GameObject obj)
     {
         string tag = obj.tag;
@@ -103,6 +113,7 @@ public class PlaceScript : MonoBehaviour, IDropHandler
         }
     }
 
+    // Atskaņo pareizo skaņu atkarībā no objekta
     private void PlaySuccessSound(string tag)
     {
         switch (tag)
